@@ -1,0 +1,6 @@
+# Editor
+.idea/
+# Fichiers Troll
+*.inp
+# Fichiers html
+*.html
