@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="robots" content="index, follow" />
+
+    <title>{% block title %}Documentation du modèle{% endblock %}</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js"></script>
+
+    <style>
+
+.equation {
+    font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+    font-size: 15px;
+    font-weight: bold;
+}
+div.equation, p.equation {
+    display: inline-block;
+    padding: 15px;
+    background-color: #f9f2f4;
+}
+a.main_variable {
+    color: #1d815d;
+}
+    </style>
+</head>
+
+<body>
+    {#== Page content ==#}
+    <main id="main" class="container">
+        <h1>Documentation du modèle</h1>
+
+        {% for equation in equations %}
+            <h3 id="{{ equation.name }}">
+               {{ equation.name }}
+            </h3>
+            <p class="equation">
+                {{ equation.whole_equation }}
+            </p>
+            {% if equation.appears_in|count > 0 %}
+            <p>
+               <span class="equation">{{ equation.name }}</span> apparait dans les équations :
+                <span class="equation">
+                    {% for var in equation.appears_in -%}
+                        <a href="#{{ var }}">{{ var }}</a>
+                        {%- if (loop.last) -%}
+                            {%- set sep = '.' -%}
+                        {%- else -%}
+                            {%- set sep = ', ' -%}
+                        {%- endif -%}
+                        {{- sep -}}
+                    {%- endfor %}
+                </span>
+            </p>
+            {% endif %}
+            <hr>
+        {% endfor %}
+
+    </main>
+
+    {#== Footer ==#}
+    <footer class="footer">
+        <div class="container">
+            Documentation compilée le {{ date }}.
+        </div>
+    </footer>
+
+    <script>
+        /**
+         * Add anchors
+         * If no selector is provided, it falls back to a default selector of:
+         * 'h2, h3, h4, h5, h6'
+         */
+        anchors.options = {
+          placement: 'left'
+        };
+        anchors.add();
+    </script>
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,3 @@
+###### Requirements with or without Version Specifiers ######
+pyparsing >= 2.2.0
+jinja2
