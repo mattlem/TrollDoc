@@ -15,8 +15,7 @@ import sys
 import re
 from datetime import datetime
 from pyparsing import *
-from jinja2 import Template
-
+from jinja2 import Environment, FileSystemLoader
 
 trollbnf = None
 
@@ -131,18 +130,17 @@ def generatehtml(equations, template, output):
     """
     print("Generating html output...")
 
-    with open(template) as f:
-        tmpl = Template(f.read().decode('utf-8'))
+    templateLoader = FileSystemLoader(searchpath="./")
+    templateEnv = Environment(loader=templateLoader)
+    tmpl = templateEnv.get_template(template)
 
-    with open(output, "w") as output_file:
+    # Render template and write it to output file
+    with open(output, "w", encoding='utf8') as output_file:
         output = tmpl.render(
             equations=equations,
-            date=datetime.now().strftime('%d/%m/%Y à %H:%M').decode('utf-8')
+            date=datetime.now().strftime('%d/%m/%Y - %Hh%M')
         )
-
-        # jinja returns unicode - so `output` needs to be encoded to a bytestring
-        # before writing it to a file
-        output_file.write(output.encode('utf-8'))
+        output_file.write(output)
 
 
 def usage():
@@ -192,7 +190,9 @@ def main():
     equations = None
     try:
         print("Parsing input file for equations: " + input + " ...")
-        equations = bnf.parseFile(input)
+        with open(input, "r", encoding='iso-8859-1') as input_file:
+            equations = bnf.parseFile(input_file)
+
         # If parsing went fine, results contains a list of Dict indexed
         # by: variable, left_side, right_side
         if verbose:
