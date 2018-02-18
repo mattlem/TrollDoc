@@ -4,3 +4,7 @@
 *.inp
 # Fichiers html
 *.html
+# Fichiers csv
+*.csv
+# Certains fichiers py
+essai.py
