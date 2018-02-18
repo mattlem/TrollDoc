@@ -118,6 +118,37 @@ def makeinternallinks(equations, verbose=False):
 
     return equations
 
+def replaceparamsbyvalues(equations, paramsfile, verbose=False):
+    """
+    Replace parameters of the equation by corresponding values
+
+    :param equations: list of equations = [name, left_side, right_side, whole_equation, variables, appears_in]
+    :param paramsfile: file with parameter names and parameter values
+    :param verbose:
+    :return: equations: list of equations = [name, left_side, right_side, whole_equation, variables, appears_in]
+    """
+    import csv
+    params = {}
+    with open(paramsfile, newline='') as csvfile:
+        spamReader = csv.reader(csvfile, delimiter=';')
+        for row in spamReader:
+            #print(row[0], row[1])
+            params[row[0].lower()] = row[1]
+        #print(params)
+    paramnames = list(params.keys())
+
+    print("Replacing parameter names by their values...")
+    for eq in equations:
+        for paramname in paramnames:
+            # Perf improvements: don't perform unuseful regex searches
+            if paramname in eq['whole_equation']:
+                regex = re.compile(r'\b(' + paramname + r')\b')
+                if regex.search(eq['whole_equation']):
+                    eq['whole_equation'] = regex.sub(eval('r'+repr(params[paramname])), eq['whole_equation'])
+                    if verbose:
+                        print("Replacing the parameter " + paramname + " in " + eq['whole_equation'])
+
+    return equations
 
 def generatehtml(equations, template, output):
     """
@@ -147,9 +178,10 @@ def usage():
     print("""
     Creates a html documentation for a model described in a TROLL input file.
     Usage :
-        python modeldoc.py -i <troll_input_file.inp> -o <documentation_file.html> [-v]
+        python modeldoc.py -i <troll_input_file.inp> -p <param_file.csv> -o <documentation_file.html> [-v]
         
-        -i : troll input file (mandatory).
+        -i : troll input file (mandatory)
+        -p : csv input file (mandatory)
         -o : html output file (mandatory)
         -v : verbose, prints debug information   
     """)
@@ -159,13 +191,14 @@ def main():
 
     # Get and check program arguments
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hi:o:v", ["help", "input=", "output=", "verbose"])
+        opts, args = getopt.getopt(sys.argv[1:], "hi:p:o:v", ["help", "input=", "paramfile=", "output=", "verbose"])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err)  # will print something like "option -a not recognized"
         usage()
         sys.exit(2)
     input = None
+    paramfile = None
     output = None
     verbose = False
     for o, a in opts:
@@ -176,11 +209,13 @@ def main():
             sys.exit()
         elif o in ("-i", "--input"):
             input = a
+        elif o in ("-p", "--paramfile"):
+            paramfile = a
         elif o in ("-o", "--output"):
             output = a
         else:
             assert False, "unhandled option"
-    if not input or not output:
+    if not input or not paramfile or not output:
         print("Missing argument")
         usage()
         sys.exit(2)
@@ -216,7 +251,10 @@ def main():
     # Complete results with internal links from variables to equations
     equations = makeinternallinks(equations, verbose)
 
-    # Generate the hml file
+    # Replace parameters by their values
+    equations = replaceparamsbyvalues(equations, paramfile, verbose)
+
+    # Generate the html file
     generatehtml(equations, 'docindex.html.jinja', output)
 
     print("Done. Output in file " + output + ".")
