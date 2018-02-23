@@ -37,10 +37,11 @@ répertoire d'installation du projet.
 1. Lancer le programme `modeldoc.py` :  
 
 ```
-python modeldoc.py -i <troll_input_file.inp> -p <param_file.csv> -o <documentation_file.html> [-v]
+python modeldoc.py -i <troll_input_file.inp> -p <param_file.csv> -l <legend_file.csv> -o <documentation_file.html> [-v]
 
         -i : troll input file (mandatory)
         -p : csv input file (mandatory)
+        -l : csv legend file (mandatory)
         -o : html output file (mandatory)
         -v : verbose, prints debug information
 ```
@@ -50,7 +51,7 @@ un navigateur.
 
 ## 4. Le code : principes de base
 
-Le programme `modeldoc.py` fait essentiellement 4 choses :
+Le programme `modeldoc.py` fait essentiellement 5 choses :
 
 * Il parse le fichier d'entrée Troll et en extrait les équations du modèle. 
 Pour chaque équation, il lit le nom de l'équation, qui doit être le nom de la 
@@ -59,6 +60,8 @@ Pour cela il utilise le module python `pyparsing`.
 Il convertit aussi tout en minuscules.  
 
 * Il remplace les paramètres par leur valeur
+
+* Il ajoute les légendes de chaque équation (nom en français de la variable expliquée)
 
 * Il cherche les variables endogènes dans chaque équation et, pour chacune, ajoute 
 dans le corps de l'équation un lien html qui pointe vers l'équation déterminant cette variable.

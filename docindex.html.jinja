@@ -36,7 +36,7 @@ a.main_variable {
 
         {% for equation in equations %}
             <h3 id="{{ equation.name }}">
-               {{ equation.name }}
+               {{ equation.name }} : {{ equation.legend }}
             </h3>
             <p class="equation">
                 {{ equation.whole_equation }}

@@ -80,7 +80,7 @@ def makeinternallinks(equations, verbose=False):
                   'right_side': eq['right_side'].lower(),
                   'whole_equation': eq['whole_equation'].lower(),
                   'variables': [],
-                  'appears_in': []
+                  'appears_in': [],
                   } for eq in equations]
 
     # Extract the equations names
@@ -150,6 +150,49 @@ def replaceparamsbyvalues(equations, paramsfile, verbose=False):
 
     return equations
 
+def insertlegends(equations, legendsfile, verbose=False):
+    """
+    Replace parameters of the equation by corresponding values
+
+    :param equations: list of equations = [name, left_side, right_side, whole_equation, variables, appears_in]
+    :param legendsfile: file with variables and their legends
+    :param verbose:
+    :return: equations: list of equations = [name, left_side, right_side, whole_equation, variables, appears_in, legend]
+    """
+
+    # Add the "legend" field in equations
+    equations = [{'name': eq['name'],
+                  'left_side': eq['left_side'],
+                  'right_side': eq['right_side'],
+                  'whole_equation': eq['whole_equation'],
+                  'variables': eq['variables'],
+                  'appears_in': eq['appears_in'],
+                  'legend': []
+                  } for eq in equations]
+
+    import csv
+    legends = {}
+    with open(legendsfile, newline='') as csvfile:
+        spamReader = csv.reader(csvfile, delimiter=';')
+        for row in spamReader:
+            #print(row[0], row[1])
+            legends[row[0].lower()] = row[1]
+        #print(params)
+    legendnames = list(legends.keys())
+
+    print("Inserting legends...")
+    for eq in equations:
+        for legendname in legendnames:
+            # Perf improvements: don't perform unuseful regex searches
+            if legendname in eq['name']:
+                regex = re.compile(r'\b(' + legendname + r')\b')
+                if regex.search(eq['name']):
+                    eq['legend'] = legends[legendname]
+                    if verbose:
+                        print("Inserting legend " + legendname + " corresponding to " + eq['name'])
+
+    return equations
+
 def generatehtml(equations, template, output):
     """
     Generate the html output, based on a Jinja template and the list of equations.
@@ -178,10 +221,11 @@ def usage():
     print("""
     Creates a html documentation for a model described in a TROLL input file.
     Usage :
-        python modeldoc.py -i <troll_input_file.inp> -p <param_file.csv> -o <documentation_file.html> [-v]
+        python modeldoc.py -i <troll_input_file.inp> -p <param_file.csv> -l <legend_file.csv> -o <documentation_file.html> [-v]
         
         -i : troll input file (mandatory)
         -p : csv input file (mandatory)
+        -l : csv legend file (mandatory)
         -o : html output file (mandatory)
         -v : verbose, prints debug information   
     """)
@@ -191,7 +235,7 @@ def main():
 
     # Get and check program arguments
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hi:p:o:v", ["help", "input=", "paramfile=", "output=", "verbose"])
+        opts, args = getopt.getopt(sys.argv[1:], "hi:p:l:o:v", ["help", "input=", "paramfile=", "legendfile=", "output=", "verbose"])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err)  # will print something like "option -a not recognized"
@@ -199,6 +243,7 @@ def main():
         sys.exit(2)
     input = None
     paramfile = None
+    legendfile = None
     output = None
     verbose = False
     for o, a in opts:
@@ -211,11 +256,13 @@ def main():
             input = a
         elif o in ("-p", "--paramfile"):
             paramfile = a
+        elif o in ("-l", "--legendfile"):
+            legendfile = a
         elif o in ("-o", "--output"):
             output = a
         else:
             assert False, "unhandled option"
-    if not input or not paramfile or not output:
+    if not input or not paramfile or not legendfile or not output:
         print("Missing argument")
         usage()
         sys.exit(2)
@@ -253,6 +300,9 @@ def main():
 
     # Replace parameters by their values
     equations = replaceparamsbyvalues(equations, paramfile, verbose)
+
+    # Insert legends for each equation
+    equations = insertlegends(equations, legendfile, verbose)
 
     # Generate the html file
     generatehtml(equations, 'docindex.html.jinja', output)
