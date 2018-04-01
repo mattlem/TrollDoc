@@ -45,6 +45,10 @@ python modeldoc.py -i <troll_input_file.inp> -p <param_file.csv> -l <legend_file
         -o : html output file (mandatory)
         -v : verbose, prints debug information
 ```
+
+Par exemple, la commande peut s'écrire:
+python modeldoc.py -i frbdf_v0.inp -p paramexport.csv -l lexique.csv -o frbdf_v0_documentation.html
+
 1. Le fichier indiqué dans l'option -o est généré. Il suffit ensuite de l'ouvrir dans 
 un navigateur. 
 

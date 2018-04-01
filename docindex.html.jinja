@@ -34,32 +34,34 @@ a.main_variable {
     <main id="main" class="container">
         <h1>Documentation du modèle</h1>
 
-        {% for equation in equations %}
-            <h3 id="{{ equation.name }}">
-               {{ equation.name }} : {{ equation.legend }}
-            </h3>
-            <p class="equation">
-                {{ equation.whole_equation }}
-            </p>
-            {% if equation.appears_in|count > 0 %}
-            <p>
-               <span class="equation">{{ equation.name }}</span> apparait dans les équations :
-                <span class="equation">
-                    {% for var in equation.appears_in -%}
-                        <a href="#{{ var }}">{{ var }}</a>
-                        {%- if (loop.last) -%}
-                            {%- set sep = '.' -%}
-                        {%- else -%}
-                            {%- set sep = ', ' -%}
-                        {%- endif -%}
-                        {{- sep -}}
-                    {%- endfor %}
-                </span>
-            </p>
-            {% endif %}
-            <hr>
+        {% for region in regions %}
+            {{ region.name }}
+            {% for equation in region.equations %}
+                <h3 id="{{ equation.name }}">
+                   {{ equation.name }} : {{ equation.legend }}
+                </h3>
+                <p class="equation">
+                    {{ equation.whole_equation }}
+                </p>
+                {% if equation.appears_in|count > 0 %}
+                <p>
+                   <span class="equation">{{ equation.name }}</span> apparait dans les équations :
+                    <span class="equation">
+                        {% for var in equation.appears_in -%}
+                            <a href="#{{ var }}">{{ var }}</a>
+                            {%- if (loop.last) -%}
+                                {%- set sep = '.' -%}
+                            {%- else -%}
+                                {%- set sep = ', ' -%}
+                            {%- endif -%}
+                            {{- sep -}}
+                        {%- endfor %}
+                    </span>
+                </p>
+                {% endif %}
+                <hr>
+            {% endfor %}
         {% endfor %}
-
     </main>
 
     {#== Footer ==#}
