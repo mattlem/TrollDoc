@@ -353,11 +353,12 @@ def main():
     # Generate the html file
     generatehtml(regions, 'docindex.html.jinja', output)
 
+    print('Printing region names...')
     for line in regions:
-        print(line.name)
-        print(line.equations)
+        if len(str(line.name))>0:
+            print(str(line.name)+'\n')
+            #print(line.equations)
 
     print("Done. Output in file " + output + ".")
-
 
 main()

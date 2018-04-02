@@ -34,8 +34,18 @@ a.main_variable {
     <main id="main" class="container">
         <h1>Documentation du modèle</h1>
 
+        <h2>Table des matières</h2>
         {% for region in regions %}
-            {{ region.name }}
+            {% if region.name|count > 0 %}
+                <li><a href="#{{ region.name }}" class="main_variable">{{ region.name }}</a> </li>
+            {% endif %}
+        {% endfor %}
+
+        <h2>Liste des équations</h2>
+        {% for region in regions %}
+            <h3 id="{{ region.name }}">
+                {{ region.name }}
+            </h3>
             {% for equation in region.equations %}
                 <h3 id="{{ equation.name }}">
                    {{ equation.name }} : {{ equation.legend }}
