@@ -136,9 +136,10 @@ def makeinternallinks(regions, verbose=False):
     print("Reverse linking: finding in which equations variables appear...")
     for idx in range(len(regions)):
         for eq in regions[idx].equations:
-            for loop_eq in regions[idx].equations:
-                if eq['name'] != loop_eq['name'] and eq['name'] in loop_eq['variables']:
-                    eq['appears_in'].append(loop_eq['name'])
+            for loop_idx in range(len(regions)):
+                for loop_eq in regions[loop_idx].equations:
+                    if eq['name'] != loop_eq['name'] and eq['name'] in loop_eq['variables']:
+                        eq['appears_in'].append(loop_eq['name'])
 
     return regions
 
