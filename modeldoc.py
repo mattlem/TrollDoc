@@ -153,7 +153,7 @@ def replaceparamsbyvalues(regions, paramsfile, verbose=False):
     :return: equations: list of equations = [name, left_side, right_side, whole_equation, variables, appears_in]
     """
     params = {}
-    with open(paramsfile, newline='') as csvfile:
+    with open(paramsfile, newline='', encoding='iso-8859-1') as csvfile:
         spamReader = csv.reader(csvfile, delimiter=';')
         for row in spamReader:
             #print(row[0], row[1])
@@ -177,12 +177,12 @@ def replaceparamsbyvalues(regions, paramsfile, verbose=False):
 
 def insertlegends(regions, legendsfile, verbose=False):
     """
-    Replace parameters of the equation by corresponding values
+    Insert legends for each equation
 
-    :param equations: list of equations = [name, left_side, right_side, whole_equation, variables, appears_in]
+    :param regions: list of regions of equations = [name, left_side, right_side, whole_equation, variables, appears_in]
     :param legendsfile: file with variables and their legends
     :param verbose:
-    :return: equations: list of equations = [name, left_side, right_side, whole_equation, variables, appears_in, legend]
+    :return: regions: list of regions of equations = [name, left_side, right_side, whole_equation, variables, appears_in, legend]
     """
 
     # Add the "legend" field in equations
@@ -197,7 +197,7 @@ def insertlegends(regions, legendsfile, verbose=False):
                                   } for eq in regions[idx].equations]
 
     legends = {}
-    with open(legendsfile, newline='') as csvfile:
+    with open(legendsfile, newline='', encoding='iso-8859-1') as csvfile:
         spamReader = csv.reader(csvfile, delimiter=';')
         for row in spamReader:
             #print(row[0], row[1])
