@@ -44,12 +44,12 @@ a.main_variable {
         <h2>Liste des équations</h2>
         {% for region in regions %}
             <h3 id="{{ region.name }}">
-                {{ region.name }}
+                {{ region.name[0] }}
             </h3>
             {% for equation in region.equations %}
-                <h3 id="{{ equation.name }}">
+                <h4 id="{{ equation.name }}">
                    {{ equation.name }} : {{ equation.legend }}
-                </h3>
+                </h4>
                 <p class="equation">
                     {{ equation.whole_equation }}
                 </p>

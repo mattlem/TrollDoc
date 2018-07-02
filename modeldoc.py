@@ -302,10 +302,9 @@ def main():
             # Formatting text by replacing region annotations "//region" and "//endregion" by "--region" and "--endregion"
             # for avoiding to suppress them with other comments
             input_text = input_file.read()
-            regexRegion = re.compile(r'//region')
-            regexEndRegion = re.compile(r'//endregion')
+            regexRegion = re.compile(r'//region', re.IGNORECASE)
+            regexEndRegion = re.compile(r'//endregion', re.IGNORECASE)
             formatted_text = regexRegion.sub(r'--region', input_text)
-            print(formatted_text)
             formatted_text = regexEndRegion.sub(r'--endregion', formatted_text)
 
         with open('formatted_' + input, "w", encoding='iso-8859-1') as formatted_file:
